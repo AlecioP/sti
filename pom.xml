@@ -41,8 +41,8 @@
 
 	<scm>
 		<developerConnection>scm:git:git@github.com:cts2/cts2-framework.git</developerConnection>
-	  <tag>cts2-framework-1.2.0.FINAL</tag>
-  </scm>
+		<tag>cts2-framework-1.2.0.FINAL</tag>
+	</scm>
 
 	<modules>
 		<module>cts2-model</module>
@@ -105,7 +105,7 @@
 					<additionalJOption>-J-XX:MaxPermSize=512m</additionalJOption>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -160,9 +160,9 @@
 					<source>${java-version}</source>
 					<target>${java-version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
-			        <fork>true</fork>
-			        <meminitial>128m</meminitial>
-			        <maxmem>512m</maxmem>
+					<fork>true</fork>
+					<meminitial>128m</meminitial>
+					<maxmem>512m</maxmem>
 				</configuration>
 			</plugin>
 
@@ -172,8 +172,8 @@
 				<version>1.2</version>
 				<configuration>
 					<providerSelection>1.7</providerSelection>
-                    <source />
-                </configuration>
+					<source />
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -265,62 +265,63 @@
 				</executions>
 			</plugin>
 
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-site-plugin</artifactId>
-                <version>3.2</version>
-	        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
 
 		</plugins>
 		<pluginManagement>
 			<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.0</version>
-				<dependencies>
-					<dependency><!-- add support for ssh/scp -->
-						<groupId>org.apache.maven.wagon</groupId>
-						<artifactId>wagon-ssh</artifactId>
-						<version>1.0</version>
-					</dependency>
-				</dependencies>
-				<configuration>
-					<reportPlugins>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-javadoc-plugin</artifactId>
-							<version>2.8</version>
-							<configuration>
-					          	<minmemory>128m</minmemory>
-								<maxmemory>512m</maxmemory>
-								<additionalJOption>-J-XX:MaxPermSize=512m</additionalJOption>
-					        </configuration>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-jxr-plugin</artifactId>
-							<version>2.3</version>
-						</plugin>
-						<plugin>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-project-info-reports-plugin</artifactId>
-							<version>2.2</version>
-                            <configuration>
-                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                            </configuration>
-						</plugin>
-					</reportPlugins>
-				</configuration>
-			</plugin>
-			
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.0</version>
+					<dependencies>
+						<dependency>
+							<!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+					<configuration>
+						<reportPlugins>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-javadoc-plugin</artifactId>
+								<version>2.8</version>
+								<configuration>
+									<minmemory>128m</minmemory>
+									<maxmemory>512m</maxmemory>
+									<additionalJOption>-J-XX:MaxPermSize=512m</additionalJOption>
+								</configuration>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-jxr-plugin</artifactId>
+								<version>2.3</version>
+							</plugin>
+							<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-project-info-reports-plugin</artifactId>
+								<version>2.2</version>
+								<configuration>
+									<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+									<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+								</configuration>
+							</plugin>
+						</reportPlugins>
+					</configuration>
+				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.7</version>
 				</plugin>
-			
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
@@ -332,14 +333,14 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5</version>
 					<dependencies>
-				    	<dependency>
-				        	<groupId>org.apache.maven.scm</groupId>
-				          	<artifactId>maven-scm-provider-gitexe</artifactId>
-				          	<version>1.8.1</version>
-				        </dependency>
-			       </dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-gitexe</artifactId>
+							<version>1.8.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
-				
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 
@@ -445,11 +446,11 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>3.4.4</version>
-        </dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
+		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -473,6 +474,15 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.liferay.portal/com.liferay.portal.kernel -->
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>com.liferay.portal.kernel</artifactId>
+			<version>58.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+
 	</dependencies>
 
 	<repositories>
@@ -492,57 +502,6 @@
 			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
 			<url>http://repository.springsource.com/maven/bundles/milestone</url>
 		</repository>
-
-		<!-- <repository>
-			<id>scala-tools.org</id>
-			<name>Scala-Tools Maven2 Repository</name>
-			<url>http://scala-tools.org/repo-releases</url>
-		</repository> -->
-
-		<!-- <repository>
-			<id>clojure-releases</id>
-			<url>http://build.clojure.org/releases</url>
-		</repository>
-		<repository>
-			<id>clojars</id>
-			<url>http://clojars.org/repo/</url>
-		</repository> -->
-
-		<!-- <repository>
-			<id>edu.informatics.maven.snapshot</id>
-			<name>Informatics Maven Snapshot Repository</name>
-			<url>http://informatics.mayo.edu/maven/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>edu.informatics.maven.releases</id>
-			<name>Informatics Maven Release Repository</name>
-			<url>http://informatics.mayo.edu/maven/content/repositories/releases</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>edu.informatics.maven.thirdparty</id>
-			<name>Informatics Maven ThirdParty Repository</name>
-			<url>http://informatics.mayo.edu/maven/content/repositories/thirdparty</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository> -->
 
 	</repositories>
 
