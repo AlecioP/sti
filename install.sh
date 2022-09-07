@@ -31,77 +31,188 @@ mvn -version
 
 # 5) Install STI-Portlets (to actually access STI-Service [maybe?])
 
-# Step 1 : Install Tomcat 9
+##################################################################################################################
 
-# Reference : https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/
+echo "Step 1 : Tomcat installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
+read -n 1 -p "Action:" action
 
-# -m : CREATE HOME DIRECTORY FOR USER
-# -d : USE SPECIFIC DIRECTORY AS HOME
-# -U : CREATE NEW GROUP WITH SAME NAME OF USER (TOMCAT GROUP)
-# -s : DEFAULT USER SHELL
+if [ "$action" = "1" ]; then
 
-# Create a user that will run tomcat service
+    # Step 1 : Install Tomcat 9
 
-sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
+    # Reference : https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/
 
-cd /tmp
-# Download
-wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.27/bin/apache-tomcat-9.0.27.tar.gz
-# Extract
-tar -xf apache-tomcat-9.0.27.tar.gz
-# Move sources
-sudo mv apache-tomcat-9.0.27 /opt/tomcat/
+    # -m : CREATE HOME DIRECTORY FOR USER
+    # -d : USE SPECIFIC DIRECTORY AS HOME
+    # -U : CREATE NEW GROUP WITH SAME NAME OF USER (TOMCAT GROUP)
+    # -s : DEFAULT USER SHELL
 
-# Make version update easier
-# (Generate simblink to refer to latest version, currently pointing to v9)
-sudo ln -s /opt/tomcat/apache-tomcat-9.0.27 /opt/tomcat/latest
+    # Create a user that will run tomcat service
 
-# Let's make sure user above has access to dir containing sources
+    sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
 
-sudo chown -R tomcat: /opt/tomcat
+    cd /tmp
+    # Download
+    wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.27/bin/apache-tomcat-9.0.27.tar.gz
+    # Extract
+    tar -xf apache-tomcat-9.0.27.tar.gz
+    # Move sources
+    sudo mv apache-tomcat-9.0.27 /opt/tomcat/
 
-# Also make sure can run tomcat's scripts
+    # Make version update easier
+    # (Generate simblink to refer to latest version, currently pointing to v9)
+    sudo ln -s /opt/tomcat/apache-tomcat-9.0.27 /opt/tomcat/latest
 
-sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+    # Let's make sure user above has access to dir containing sources
 
-# Create a service manageable from sysctl
+    sudo chown -R tomcat: /opt/tomcat
 
-sudo echo "[Unit]
-Description=Tomcat 9 servlet container
-After=network.target
+    # Also make sure can run tomcat's scripts
 
-[Service]
-Type=forking
+    sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
 
-User=tomcat
-Group=tomcat
+    # Create a service manageable from sysctl
 
-Environment="JAVA_HOME=/usr/lib/jvm/jre"
-Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
+    sudo echo "[Unit]
+    Description=Tomcat 9 servlet container
+    After=network.target
 
-Environment="CATALINA_BASE=/opt/tomcat/latest"
-Environment="CATALINA_HOME=/opt/tomcat/latest"
-Environment="CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid"
-Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+    [Service]
+    Type=forking
 
-ExecStart=/opt/tomcat/latest/bin/startup.sh
-ExecStop=/opt/tomcat/latest/bin/shutdown.sh
+    User=tomcat
+    Group=tomcat
 
-[Install]
-WantedBy=multi-user.target
-" >/etc/systemd/system/tomcat.service
+    Environment="JAVA_HOME=/usr/lib/jvm/jre"
+    Environment="JAVA_OPTS=-Djava.security.egd=file:///dev/urandom"
 
-# Add to sysctl
-sudo systemctl daemon-reload
+    Environment="CATALINA_BASE=/opt/tomcat/latest"
+    Environment="CATALINA_HOME=/opt/tomcat/latest"
+    Environment="CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid"
+    Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+    
 
-# Enable service 
-sudo systemctl enable tomcat
-# Start service
-sudo systemctl start tomcat
-# Check service
-sudo systemctl status tomcat
+    ExecStart=/opt/tomcat/latest/bin/startup.sh
+    ExecStop=/opt/tomcat/latest/bin/shutdown.sh
 
-# Just fine with https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/ tutorial
+    [Install]
+    WantedBy=multi-user.target
+    " >/etc/systemd/system/tomcat.service
 
-# Step 2 : Install Liferay
+    # Add to sysctl
+    sudo systemctl daemon-reload
+
+    # Enable service 
+    sudo systemctl enable tomcat
+    # Start service
+    sudo systemctl start tomcat
+    # Check service
+    sudo systemctl status tomcat
+
+    # Just fine with https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/ tutorial
+else
+    if [ "$action" != "2" ]; then
+        echo "Aborting..."
+    fi
+fi
+
+##################################################################################################################
+
+echo "Step 2 : Liferay installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
+read -n 1 -p "Action:" action
+
+if [ "$action" = "1" ]; then
+
+    # Step 2 : Install Liferay
+    # Liferay libs from https://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.2.5%20GA6/
+    # Reference : https://help.liferay.com/hc/en-us/articles/360017903112-Installing-Liferay-on-Tomcat-7
+
+    LIFERAY_WAR="liferay-portal-6.2-ce-ga6-20160112152609836.war"
+    LIFERAY_DEP="liferay-portal-dependencies-6.2-ce-ga6-20160112152609836.zip"
+
+    cd /tmp
+
+    wget https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/6.2.5%20GA6/liferay-portal-6.2-ce-ga6-20160112152609836.war
+    wget https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/6.2.5%20GA6/liferay-portal-dependencies-6.2-ce-ga6-20160112152609836.zip
+
+    mkdir $CATALINA_HOME/lib/ext
+    unzip $LIFERAY_DEP -d $CATALINA_HOME/lib/ext
+
+    SUPPORT_JAR="support-tomcat-6.2.1.jar"
+
+    wget https://repo1.maven.org/maven2/com/liferay/portal/support-tomcat/6.2.1/support-tomcat-6.2.1.jar
+
+    mv $SUPPORT_JAR $CATALINA_HOME/lib/ext
+
+    JTA_JAR="jta-1.1.jar"
+
+    wget https://repo1.maven.org/maven2/javax/transaction/jta/1.1/jta-1.1.jar
+
+    mv $JTA_JAR $CATALINA_HOME/lib/ext
+
+    JAVAMAIL_JAR="javax.mail-1.6.2.jar"
+
+    wget https://maven.java.net/content/repositories/releases/com/sun/mail/javax.mail/1.6.2/javax.mail-1.6.2.jar
+
+    mv $JAVAMAIL_JAR $CATALINA_HOME/lib/ext
+
+    PERSISTENCE_JAR="persistence-api-1.0.2.jar"
+
+    wget https://repo1.maven.org/maven2/javax/persistence/persistence-api/1.0.2/persistence-api-1.0.2.jar
+
+    mv $PERSISTENCE_JAR $CATALINA_HOME/lib/ext
+
+    JDBC_JAR="postgresql-42.5.0.jar"
+
+    wget https://repo1.maven.org/maven2/org/postgresql/postgresql/42.5.0/postgresql-42.5.0.jar
+
+    mv $JDBC_JAR $CATALINA_HOME/lib/ext
+
+    # Skipping download of optional jars (assuming they're optional)
+
+    CATALINA_OPTS="$CATALINA_OPTS -Dfile.encoding=UTF-8 -Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false -Duser.timezone=GMT -XX:MaxPermSize=256m"
+
+    # -p : Create every intermediate directory if not exists
+    mkdir -p $CATALINA_HOME/conf/Catalina/localhost
+
+    echo "<Context path=\"\" crossContext=\"true\">
+
+     <!-- JAAS -->
+
+     <!--<Realm
+         classNjame=\"org.apache.catalina.realm.JAASRealm\"
+         appName=\"PortalRealm\"
+         userClassNames=\"com.liferay.portal.kernel.security.jaas.PortalPrincipal\"
+         roleClassNames=\"com.liferay.portal.kernel.security.jaas.PortalRole\"
+     />-->
+
+     <!--
+     Uncomment the following to disable persistent sessions across reboots.
+     -->
+
+     <!--<Manager pathname=\"\" />-->
+
+     <!--
+     Uncomment the following to not use sessions. See the property
+     \"session.disabled\" in portal.properties.
+     -->
+
+     <!--<Manager className=\"com.liferay.support.tomcat.session.SessionLessManagerBase\" />-->
+    </Context>" >$CATALINA_HOME/conf/Catalina/localhost/ROOT.xml
+
+    sed -Ee -i$CATALINA_HOME/conf/catalina.properties 's/(common\.loader.*)$/\1,\${catalina\.home}\/lib\/ext,\${catalina\.home}\/lib\/ext\/\*\.jar/g'
+
+    sed -Ee -i$CATALINA_HOME/conf/server.xml 's/(redirectPort=\"8443\")/\1 URIEncoding=\"UTF-8\"/g'
+
+    if test -f "$CATALINA_HOME/webapps/support-catalina*.jar"; then
+        rm $CATALINA_HOME/webapps/support-catalina*.jar
+    fi
+
+else
+    if [ "$action" != "2" ]; then
+        echo "Aborting..."
+    fi
+fi
+
+##################################################################################################################
 
