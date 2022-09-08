@@ -44,7 +44,7 @@ if [ "$action" = "1" ]; then
 
     read -n 1 -p "Skip Tomcat user setup?(y/n)" action
 
-    if [ "$action" != "y"] then
+    if [ "$action" != "y"]; then
 
         # -m : CREATE HOME DIRECTORY FOR USER
         # -d : USE SPECIFIC DIRECTORY AS HOME
@@ -80,32 +80,7 @@ if [ "$action" = "1" ]; then
 
     # Create a service manageable from sysctl
 
-    SERVICE="[Unit]
-    Description=Tomcat 9 servlet container
-    After=network.target
-
-    [Service]
-    Type=forking
-
-    User=tomcat
-    Group=tomcat
-
-    Environment=\"JAVA_HOME=/usr/lib/jvm/jre\"
-    Environment=\"JAVA_OPTS=-Djava.security.egd=file:///dev/urandom\"
-
-    Environment=\"CATALINA_BASE=/opt/tomcat/latest\"
-    Environment=\"CATALINA_HOME=/opt/tomcat/latest\"
-    Environment=\"CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid\"
-    Environment=\"CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$CATALINA_BASE/conf/catalina.policy\"
-    
-
-    ExecStart=/opt/tomcat/latest/bin/startup.sh --security
-    ExecStop=/opt/tomcat/latest/bin/shutdown.sh
-
-    [Install]
-    WantedBy=multi-user.target
-    " 
-    sudo bash -c "echo $SERVICE >/etc/systemd/system/tomcat.service"
+    sudo bash -c "cat ./tomcat-service >/etc/systemd/system/tomcat.service"
 
     # Add to sysctl
     sudo systemctl daemon-reload
