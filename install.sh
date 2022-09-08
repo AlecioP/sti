@@ -36,7 +36,7 @@ mvn -version
 echo "Step 1 : Tomcat installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
 read -n 1 -p "Action:" action
 
-if [ "$action" = "1" ]; then
+if [ "$action" = "1" ]; then
 
     # Step 1 : Install Tomcat 9
 
@@ -53,11 +53,11 @@ if [ "$action" = "1" ]; then
 
     cd /tmp
     # Download
-    wget https://www-eu.apache.org/dist/tomcat/tomcat-9/v9.0.27/bin/apache-tomcat-9.0.27.tar.gz
+    wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz
     # Extract
-    tar -xf apache-tomcat-9.0.27.tar.gz
+    tar -xf apache-tomcat-9.0.65.tar.gz
     # Move sources
-    sudo mv apache-tomcat-9.0.27 /opt/tomcat/
+    sudo mv apache-tomcat-9.0.65 /opt/tomcat/
 
     # Make version update easier
     # (Generate simblink to refer to latest version, currently pointing to v9)
