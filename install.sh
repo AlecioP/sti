@@ -76,11 +76,12 @@ if [ "$action" = "1" ]; then
 
     # Also make sure can run tomcat's scripts
 
-    sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+    sudo sh -c 'chmod +rx /opt/tomcat/latest/bin/*.sh'
 
     # Create a service manageable from sysctl
 
-    sudo bash -c "cat ./tomcat-service >/etc/systemd/system/tomcat.service"
+    SERVICE_URL="https://raw.githubusercontent.com/AlecioP/sti-cts2-framework/master/tomcat-service"
+    sudo bash -c "curl  $SERVICE_URL >/etc/systemd/system/tomcat.service"
 
     # Add to sysctl
     sudo systemctl daemon-reload
