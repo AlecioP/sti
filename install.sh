@@ -78,6 +78,8 @@ if [ "$action" = "1" ]; then
 
     sudo sh -c 'chmod +rx /opt/tomcat/latest/bin/*.sh'
 
+    sudo sh -c 'chmod a+rx /opt /opt/tomcat/ /opt/tomcat/bin'
+
     # Create a service manageable from sysctl
 
     SERVICE_URL="https://raw.githubusercontent.com/AlecioP/sti-cts2-framework/master/tomcat-service"
