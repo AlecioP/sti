@@ -78,7 +78,7 @@ if [ "$action" = "1" ]; then
 
     sudo sh -c 'chmod +rx /opt/tomcat/latest/bin/*.sh'
 
-    sudo sh -c 'chmod a+rx /opt /opt/tomcat/ /opt/tomcat/bin'
+    sudo sh -c 'chmod a+rx /opt /opt/tomcat/ /opt/tomcat/latest /opt/tomcat/latest/bin'
 
     # Create a service manageable from sysctl
 
