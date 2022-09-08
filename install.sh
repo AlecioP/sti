@@ -42,26 +42,33 @@ if [ "$action" = "1" ]; then
 
     # Reference : https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/
 
-    # -m : CREATE HOME DIRECTORY FOR USER
-    # -d : USE SPECIFIC DIRECTORY AS HOME
-    # -U : CREATE NEW GROUP WITH SAME NAME OF USER (TOMCAT GROUP)
-    # -s : DEFAULT USER SHELL
+    read -n 1 -p "Skip Tomcat user setup?(y/n)" action
 
-    # Create a user that will run tomcat service
+    if [ "$action" != "y"] then
 
-    sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
+        # -m : CREATE HOME DIRECTORY FOR USER
+        # -d : USE SPECIFIC DIRECTORY AS HOME
+        # -U : CREATE NEW GROUP WITH SAME NAME OF USER (TOMCAT GROUP)
+        # -s : DEFAULT USER SHELL
+
+        # Create a user that will run tomcat service
+
+        sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
+    fi
+
+    TOMCAT_V="9.0.65"
 
     cd /tmp
     # Download
-    wget https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz
+    wget "https://dlcdn.apache.org/tomcat/tomcat-9/v${TOMCAT_V}/bin/apache-tomcat-${TOMCAT_V}.tar.gz"
     # Extract
-    tar -xf apache-tomcat-9.0.65.tar.gz
+    tar -xf "apache-tomcat-${TOMCAT_V}.tar.gz"
     # Move sources
-    sudo mv apache-tomcat-9.0.65 /opt/tomcat/
+    sudo mv "apache-tomcat-${TOMCAT_V}" /opt/tomcat/
 
     # Make version update easier
     # (Generate simblink to refer to latest version, currently pointing to v9)
-    sudo ln -s /opt/tomcat/apache-tomcat-9.0.27 /opt/tomcat/latest
+    sudo ln -s "/opt/tomcat/apache-tomcat-${TOMCAT_V}" /opt/tomcat/latest
 
     # Let's make sure user above has access to dir containing sources
 
@@ -113,6 +120,7 @@ if [ "$action" = "1" ]; then
 else
     if [ "$action" != "2" ]; then
         echo "Aborting..."
+        exit
     fi
 fi
 
@@ -121,9 +129,8 @@ fi
 echo "Step 2 : Liferay installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
 read -n 1 -p "Action:" action
 
-if [ "$action" = "1" ]; then
-
-    # Step 2 : Install Liferay
+if [ "$action" = "1" ]; then
+    
     # Liferay libs from https://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.2.5%20GA6/
     # Reference : https://help.liferay.com/hc/en-us/articles/360017903112-Installing-Liferay-on-Tomcat-7
 
@@ -227,15 +234,17 @@ if [ "$action" = "1" ]; then
 else
     if [ "$action" != "2" ]; then
         echo "Aborting..."
+        exit
     fi
 fi
 
 ##################################################################################################################
 echo "Step 3 : CTS2 maven build and installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
-if [ "$action" = "1" ]; then
+if [ "$action" = "1" ]; then
     mvn clean install
 else
     if [ "$action" != "2" ]; then
         echo "Aborting..."
+        exit
     fi
 fi
