@@ -89,10 +89,10 @@ if [ "$action" = "1" ]; then
     Environment="CATALINA_BASE=/opt/tomcat/latest"
     Environment="CATALINA_HOME=/opt/tomcat/latest"
     Environment="CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid"
-    Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC"
+    Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$CATALINA_BASE/conf/catalina.policy"
     
 
-    ExecStart=/opt/tomcat/latest/bin/startup.sh
+    ExecStart=/opt/tomcat/latest/bin/startup.sh --security
     ExecStop=/opt/tomcat/latest/bin/shutdown.sh
 
     [Install]
@@ -208,6 +208,22 @@ if [ "$action" = "1" ]; then
         rm $CATALINA_HOME/webapps/support-catalina*.jar
     fi
 
+    if test -f "$CATALINA_HOME/conf/catalina.policy"; then
+        if test -z $(cat $CATALINA_HOME/conf/catalina.policy | grep grant); then
+            echo "grant {permission java.security.AllPermission;};" >> $CATALINA_HOME/conf/catalina.policy
+        fi
+    fi
+
+    sudo systemctl stop tomcat
+
+    sudo rm $CATALINA_HOME/webapps/ROOT/*
+
+    unzip $LIFERAY_WAR -d $CATALINA_HOME/webapps/ROOT 
+
+    sudo systemctl reload tomcat
+
+    sudo systemctl start tomcat
+
 else
     if [ "$action" != "2" ]; then
         echo "Aborting..."
@@ -215,4 +231,11 @@ else
 fi
 
 ##################################################################################################################
-
+echo "Step 3 : CTS2 maven build and installation. Action required! 1 : continue - 2 : skip - 3(or else) : abort"
+if [ "$action" = "1" ]; then
+    mvn clean install
+else
+    if [ "$action" != "2" ]; then
+        echo "Aborting..."
+    fi
+fi
