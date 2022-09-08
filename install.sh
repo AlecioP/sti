@@ -80,7 +80,7 @@ if [ "$action" = "1" ]; then
 
     # Create a service manageable from sysctl
 
-    sudo echo "[Unit]
+    SERVICE="[Unit]
     Description=Tomcat 9 servlet container
     After=network.target
 
@@ -104,7 +104,8 @@ if [ "$action" = "1" ]; then
 
     [Install]
     WantedBy=multi-user.target
-    " >/etc/systemd/system/tomcat.service
+    " 
+    sudo bash -c "echo $SERVICE >/etc/systemd/system/tomcat.service"
 
     # Add to sysctl
     sudo systemctl daemon-reload
