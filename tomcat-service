@@ -23,5 +23,7 @@ Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.
 ExecStart=/opt/tomcat/apache-tomcat-9.0.65/bin/startup.sh --security
 ExecStop=/opt/tomcat/apache-tomcat-9.0.65/bin/shutdown.sh
 
+RemainAfterExit=yes
+
 [Install]
 WantedBy=multi-user.target
