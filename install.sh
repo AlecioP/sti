@@ -44,7 +44,7 @@ if [ "$action" = "1" ]; then
 
     read -n 1 -p "Skip Tomcat user setup?(y/n)" action
 
-    if [ "$action" != "y"]; then
+    if [ "$action" != "y" ]; then
 
         # -M : NO HOME DIRECTORY FOR USER
         # -m : CREATE HOME DIRECTORY FOR USER
