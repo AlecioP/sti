@@ -85,6 +85,12 @@ if [ "$action" = "1" ]; then
 
     sudo sh -c 'chmod +rwx /opt/tomcat/latest/logs /opt/tomcat/latest/logs/*'
 
+    # AlmaLinux enables SELinux which prevents systemctl to run binaries tagged user_tmp_t but only allows bin_t type
+    # Reference : https://bugs.almalinux.org/view.php?id=212
+    
+    sudo chcon --type=bin_t /opt/tomcat/latest/bin/startup.sh
+    sudo chcon --type=bin_t /opt/tomcat/latest/bin/shutdown.sh
+
     # Create a service manageable from sysctl
 
     SERVICE_URL="https://raw.githubusercontent.com/AlecioP/sti-cts2-framework/master/tomcat-service"

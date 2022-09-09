@@ -20,7 +20,7 @@ Environment="CATALINA_PID=/opt/tomcat/latest/temp/tomcat.pid"
 Environment="CATALINA_OPTS=-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$CATALINA_BASE/conf/catalina.policy"
 
 
-ExecStart=/opt/tomcat/latest/bin/startup.sh
+ExecStart=/opt/tomcat/latest/bin/startup.sh --security
 ExecStop=/opt/tomcat/latest/bin/shutdown.sh
 
 [Install]
