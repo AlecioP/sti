@@ -81,13 +81,11 @@ if [ "$action" = "1" ]; then
 
     sudo sh -c 'chmod +rx /opt/tomcat/latest/bin/*.sh'
 
-    sudo sh -c 'chmod a+rx /opt /opt/tomcat/ /opt/tomcat/latest /opt/tomcat/latest/bin'
-
-    sudo sh -c 'chmod +rwx /opt/tomcat/latest/logs /opt/tomcat/latest/logs/*'
+    sudo sh -c 'chmod a+rwx /opt /opt/tomcat/ /opt/tomcat/latest /opt/tomcat/latest/bin'
 
     # AlmaLinux enables SELinux which prevents systemctl to run binaries tagged user_tmp_t but only allows bin_t type
     # Reference : https://bugs.almalinux.org/view.php?id=212
-    
+
     sudo chcon --type=bin_t /opt/tomcat/latest/bin/startup.sh
     sudo chcon --type=bin_t /opt/tomcat/latest/bin/shutdown.sh
 
