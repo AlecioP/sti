@@ -46,6 +46,7 @@ if [ "$action" = "1" ]; then
 
     if [ "$action" != "y"]; then
 
+        # -M : NO HOME DIRECTORY FOR USER
         # -m : CREATE HOME DIRECTORY FOR USER
         # -d : USE SPECIFIC DIRECTORY AS HOME
         # -U : CREATE NEW GROUP WITH SAME NAME OF USER (TOMCAT GROUP)
@@ -53,7 +54,9 @@ if [ "$action" = "1" ]; then
 
         # Create a user that will run tomcat service
 
-        sudo useradd -m -U -d /opt/tomcat -s /bin/false tomcat
+        mkdir /opt/tomcat
+
+        sudo useradd -M -U -s /bin/false tomcat
     fi
 
     TOMCAT_V="9.0.65"
