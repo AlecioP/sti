@@ -1,1 +1,0 @@
-cat install.sh | grep -E 'wget|Step' | sed -Ee 's/\twget\s(https.*)/\1/g'
