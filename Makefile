@@ -195,7 +195,7 @@ liferay-deps-download:
 
 liferay-build:
 	
-	CATALINA_OPTS="$(CATALINA_OPTS) -Dfile.encoding=UTF-8 -Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false -Duser.timezone=GMT -XX:MaxPermSize=256m"
+	
 
 # -p : Create every intermediate directory if not exists
 	sudo -u tomcat mkdir -p $(CATALINA_HOME)/conf/Catalina/localhost
