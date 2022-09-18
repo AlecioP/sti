@@ -8,7 +8,9 @@ JAVA_OPTS = -Djava.security.egd=file:///dev/urandom
 CATALINA_BASE = /opt/tomcat/apache-tomcat-9.0.65
 CATALINA_HOME = /opt/tomcat/apache-tomcat-9.0.65
 CATALINA_PID = /opt/tomcat/apache-tomcat-9.0.65/temp/tomcat.pid
-CATALINA_OPTS = -Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$CATALINA_BASE/conf/catalina.policy
+CATALINA_OPTS = -Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$(CATALINA_BASE)/conf/catalina.policy
+
+TOMCAT_V = 9.0.65
 
 # Procedure download_lib
 # Parameters :
@@ -17,6 +19,12 @@ CATALINA_OPTS = -Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.ma
 define download_lib
 	if [ -f "/tmp/$(1)" ]; then echo "$(1) already downloaded"; else wget $(2) -P /tmp; fi
 endef
+
+clean: clean-liferay-build clean-liferay clean-tomcat
+
+clean-no-tmp: clean-liferay-build clean-tomcat
+
+
 
 all: prerequisites clean-tomcat tomcat clean-liferay liferay
 	echo "done!"
@@ -66,8 +74,6 @@ show-deps:
 	echo " "
 	cat Makefile | grep -E 'download_lib' | grep -v Makefile | sed -Ee 's/(\t|\s)*wget\s\"?(https[^\"]*)\"?/\2/g' 
 	echo " "
-
-TOMCAT_V = 9.0.65
 
 tomcat:
 
@@ -146,9 +152,11 @@ clean-tomcat:
 		sudo rmdir /opt/tomcat; \
 	fi
 
+
 clean-liferay:
 	sudo rm -rf /opt/tomcat/apache-tomcat-9.0.65/lib/ext/
-	read -n 1 -p "Time to ctrl+c my guy" action
+	read -n 1 -p "Ctrl+c to abort. Press any key to proceed deleting all liferay libs downloaded in /tmp " action
+	echo " "
 	sudo rm /tmp/liferay*
 	sudo rm /tmp/support-tomcat*
 	sudo rm /tmp/jta*
@@ -175,7 +183,10 @@ liferay-deps-download:
 	
 	if [ ! -f "$(CATALINA_HOME)/lib/ext" ]; then sudo -u tomcat mkdir  $(CATALINA_HOME)/lib/ext; fi
 	
-	sudo -u tomcat unzip /tmp/$(LIFERAY_DEP) -d $(CATALINA_HOME)/lib/ext
+# Since Liferay dependencies zip contains only jars but has no directory structure, we can use unzip -j
+# -j : Just extract do not preserve archive directory structure
+
+	sudo -u tomcat unzip -j /tmp/$(LIFERAY_DEP) -d $(CATALINA_HOME)/lib/ext
 
 	$(call download_lib,$(SUPPORT_JAR),"https://repo1.maven.org/maven2/com/liferay/portal/support-tomcat/6.2.1/$(SUPPORT_JAR)")
 	sudo -u tomcat cp /tmp/$(SUPPORT_JAR) $(CATALINA_HOME)/lib/ext
@@ -192,34 +203,60 @@ liferay-deps-download:
 	$(call download_lib,$(JDBC_JAR),"https://repo1.maven.org/maven2/org/postgresql/postgresql/42.5.0/$(JDBC_JAR)")
 	sudo -u tomcat cp /tmp/$(JDBC_JAR) $(CATALINA_HOME)/lib/ext
 # Skipping download of optional jars (assuming they're optional)
+clean-liferay-build:
+	sudo rm -r $(CATALINA_HOME)/conf/Catalina/localhost/
+	sudo rm $(CATALINA_HOME)/conf/catalina.properties
+	sudo cp $(THIS_DIR)conf/copy-catalina-properties $(CATALINA_HOME)/conf/catalina.properties
+	sudo rm $(CATALINA_HOME)/conf/server.xml
+	sudo cp $(THIS_DIR)conf/copy-server.xml $(CATALINA_HOME)/conf/server.xml
+	sudo rm $(CATALINA_HOME)/conf/catalina.policy
+	sudo cp $(THIS_DIR)conf/copy-catalina-policy $(CATALINA_HOME)/conf/catalina.policy
 
-liferay-build:
-	
-	
+liferay-build: #clean-liferay-build
+
+# Security issues with examples webapp. Just deleting it
+
+	- sudo rm -r $(CATALINA_HOME)/webapps/examples
 
 # -p : Create every intermediate directory if not exists
-	sudo -u tomcat mkdir -p $(CATALINA_HOME)/conf/Catalina/localhost
+	- sudo -u tomcat mkdir -p $(CATALINA_HOME)/conf/Catalina/localhost
 
-	cat $(THIS_DIR)/conf/ROOT.xml >$(CATALINA_HOME)/conf/Catalina/localhost/ROOT.xml
+	sudo sh -c "cat $(THIS_DIR)conf/ROOT.xml >$(CATALINA_HOME)/conf/Catalina/localhost/ROOT.xml"
 
-	sed -Ee -i$(CATALINA_HOME)/conf/catalina.properties 's/(common\.loader.*)$/\1,\${catalina\.home}\/lib\/ext,\${catalina\.home}\/lib\/ext\/\*\.jar/g'
+	sudo cp $(CATALINA_HOME)/conf/catalina.properties $(THIS_DIR)conf/copy-catalina-properties
 
-	read -n 1 -p "Time to ctrl+c and check ./conf/catalina-properties" action
+	sudo sed -i -Ee 's/(common\.loader.*)$$/\1,"\$${catalina\.home}\/lib\/ext","\$${catalina\.home}\/lib\/ext\/\*\.jar"/g' $(CATALINA_HOME)/conf/catalina.properties
 
-	sed -Ee -i$(CATALINA_HOME)/conf/server.xml 's/(redirectPort=\"8443\")/\1 URIEncoding=\"UTF-8\"/g'
+	sudo cp $(CATALINA_HOME)/conf/server.xml $(THIS_DIR)conf/copy-server.xml
+	
+	sudo sed -i -Ee 's/(redirectPort="8443")/\1 URIEncoding="UTF-8"/g' $(CATALINA_HOME)/conf/server.xml
 
-	if test -f "$(CATALINA_HOME)/webapps/support-catalina*.jar"; then rm $(CATALINA_HOME)/webapps/support-catalina*.jar; fi
+	- sudo -u tomcat rm $(CATALINA_HOME)/webapps/support-catalina*.jar
 
-	if test -f "$(CATALINA_HOME)/conf/catalina.policy"; then if test -z $(cat $(CATALINA_HOME)/conf/catalina.policy | grep grant); then echo "grant {permission java.security.AllPermission;};" >> $(CATALINA_HOME)/conf/catalina.policy; fi; fi
+	sudo cp $(CATALINA_HOME)/conf/catalina.policy $(THIS_DIR)conf/copy-catalina-policy
+
+	if test -z $(sudo cat $(CATALINA_HOME)/conf/catalina.policy | grep grant*AllPermission); then sudo sh -c "printf '\ngrant {permission java.security.AllPermission;};' >> $(CATALINA_HOME)/conf/catalina.policy"; fi
 
 	sudo systemctl stop tomcat
 
-	sudo rm $(CATALINA_HOME)/webapps/ROOT/*
+	- sudo rm -r $(CATALINA_HOME)/webapps/ROOT/
+	sudo -u tomcat sh -c "mkdir $(CATALINA_HOME)/webapps/ROOT/"
 
-	sudo -u tomcat unzip $(LIFERAY_WAR) -d $(CATALINA_HOME)/webapps/ROOT 
-
-	sudo systemctl reload tomcat
+	sudo -u tomcat sh -c "unzip /tmp/$(LIFERAY_WAR) -d $(CATALINA_HOME)/webapps/ROOT"
 
 	sudo systemctl start tomcat
 
 liferay: liferay-deps-download liferay-build
+
+run: 
+	systemctl start tomcat
+stop:
+	systemctl stop tomcat
+
+status:
+	systemctl status tomcat
+catalina-log:
+	if test -z $(THIS_DIR)output; then rm $(THIS_DIR)output; fi
+	sudo cat /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out >./output
+clean-tomcat-log:
+	sudo rm /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out

@@ -16,3 +16,7 @@ target/
 
 output-display-dep-update
 working-service
+conf/copy-server.xml
+conf/copy-catalina-properties
+conf/copy-catalina-policy
+output*
