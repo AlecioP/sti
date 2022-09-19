@@ -128,11 +128,8 @@ tomcat:
 	sudo systemctl daemon-reload
 
 # Enable service 
-	sudo systemctl enable tomcat
-# Start service
-	sudo systemctl start tomcat
-# Check service
-	sudo systemctl status tomcat
+	systemctl enable tomcat
+
 # Just fine with https://linuxize.com/post/how-to-install-tomcat-9-on-centos-7/ tutorial
 
 clean-tomcat:
@@ -171,7 +168,7 @@ JTA_JAR =jta-1.1.jar
 JAVAMAIL_JAR =javax.mail-1.6.2.jar
 PERSISTENCE_JAR =persistence-api-1.0.2.jar
 JDBC_JAR =postgresql-42.5.0.jar
-
+JAF_JAR =activation-1.1.1.jar
 
 liferay-deps-download:
 # Liferay libs from https://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.2.5%20GA6/
@@ -203,6 +200,10 @@ liferay-deps-download:
 	$(call download_lib,$(JDBC_JAR),"https://repo1.maven.org/maven2/org/postgresql/postgresql/42.5.0/$(JDBC_JAR)")
 	sudo -u tomcat cp /tmp/$(JDBC_JAR) $(CATALINA_HOME)/lib/ext
 # Skipping download of optional jars (assuming they're optional)
+
+	$(call download_lib,$(JAF_JAR),"https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/$(JAF_JAR)")
+	sudo -u tomcat cp /tmp/$(JAF_JAR) $(CATALINA_HOME)/lib/ext
+	
 clean-liferay-build:
 	sudo rm -r $(CATALINA_HOME)/conf/Catalina/localhost/
 	sudo rm $(CATALINA_HOME)/conf/catalina.properties
@@ -237,19 +238,16 @@ liferay-build: #clean-liferay-build
 
 	if test -z $(sudo cat $(CATALINA_HOME)/conf/catalina.policy | grep grant*AllPermission); then sudo sh -c "printf '\ngrant {permission java.security.AllPermission;};' >> $(CATALINA_HOME)/conf/catalina.policy"; fi
 
-	sudo systemctl stop tomcat
-
 	- sudo rm -r $(CATALINA_HOME)/webapps/ROOT/
 	sudo -u tomcat sh -c "mkdir $(CATALINA_HOME)/webapps/ROOT/"
 
 	sudo -u tomcat sh -c "unzip /tmp/$(LIFERAY_WAR) -d $(CATALINA_HOME)/webapps/ROOT"
 
-	sudo systemctl start tomcat
-
 liferay: liferay-deps-download liferay-build
 
 run: 
 	systemctl start tomcat
+	firefox -new-tab "localhost:8080"
 stop:
 	systemctl stop tomcat
 
@@ -258,5 +256,10 @@ status:
 catalina-log:
 	if test -z $(THIS_DIR)output; then rm $(THIS_DIR)output; fi
 	sudo cat /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out >./output
-clean-tomcat-log:
+clean-catalina-log:
 	sudo rm /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out
+
+LIFERAY_HOME= /opt/tomcat
+
+cts2-plugin:
+	echo "cts2 plugin"

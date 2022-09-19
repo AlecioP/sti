@@ -20,7 +20,7 @@ Environment=CATALINA_PID=/opt/tomcat/apache-tomcat-9.0.65/temp/tomcat.pid
 Environment=CATALINA_OPTS="-Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$CATALINA_BASE/conf/catalina.policy -Dfile.encoding=UTF-8 -Dorg.apache.catalina.loader.WebappClassLoader.ENABLE_CLEAR_REFERENCES=false -Duser.timezone=GMT -XX:MaxPermSize=256m"
 
 
-ExecStart=/opt/tomcat/apache-tomcat-9.0.65/bin/startup.sh --security
+ExecStart=/opt/tomcat/apache-tomcat-9.0.65/bin/startup.sh -security
 ExecStop=/opt/tomcat/apache-tomcat-9.0.65/bin/shutdown.sh
 
 RemainAfterExit=yes

@@ -20,3 +20,4 @@ conf/copy-server.xml
 conf/copy-catalina-properties
 conf/copy-catalina-policy
 output*
+target/
