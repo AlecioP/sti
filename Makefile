@@ -247,19 +247,47 @@ liferay: liferay-deps-download liferay-build
 
 run: 
 	systemctl start tomcat
-	firefox -new-tab "localhost:8080"
+#	firefox -new-tab "localhost:8080"
 stop:
 	systemctl stop tomcat
 
 status:
 	systemctl status tomcat
+
+logs:
+#	- rm $(THIS_DIR)output* 
+	for f in $$(sudo ls $(LIFERAY_HOME)/logs); do sudo cp $(LIFERAY_HOME)/logs/$$f $(THIS_DIR)output-$$f ; done
+#	for f in $$(sudo ls $(LIFERAY_HOME)/logs); do sudo echo $$f ; done
+	sudo cp $(CATALINA_HOME)/logs/catalina.out $(THIS_DIR)output-catalina.log
+	sudo chown $${USER}: $(THIS_DIR)output* 
 catalina-log:
 	if test -z $(THIS_DIR)output; then rm $(THIS_DIR)output; fi
 	sudo cat /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out >./output
 clean-catalina-log:
 	sudo rm /opt/tomcat/apache-tomcat-9.0.65/logs/catalina.out
 
-LIFERAY_HOME= /opt/tomcat
+LIFERAY_HOME= $(CATALINA_HOME)/..
 
+update-pom:
+	mvn versions:use-latest-releases
+
+clean-cts2-plugin:
+	- sudo rm $(CATALINA_HOME)/webapps/cts2-webapp.war
+	- sudo rm -r $(CATALINA_HOME)/webapps/cts2-webapp
+	sudo ls -l $(CATALINA_HOME)/webapps/
 cts2-plugin:
-	echo "cts2 plugin"
+	@echo "Potential dependencies updates :"
+	@echo " "
+#	mvn versions:display-dependency-updates | grep -e "\->"
+	@echo " "
+	@echo "Consider updating using target update-pom (make update-pom)"
+	@echo "Building artifact"
+	@echo " "
+#	mvn clean install -DskipTests=true | grep -v "Downloading from" | grep -v "Downloaded from"
+
+#	read -n 1 -p "Ctrl+c to stop, anything else to continue"
+	@echo " "
+
+	
+	sudo cp $(THIS_DIR)cts2-webapp/target/cts2-webapp-1.2.0.FINAL.war $(CATALINA_HOME)/webapps/cts2-webapp.war
+	sudo chown tomcat: $(CATALINA_HOME)/webapps/cts2-webapp.war

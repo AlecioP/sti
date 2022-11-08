@@ -21,3 +21,4 @@ conf/copy-catalina-properties
 conf/copy-catalina-policy
 output*
 target/
+*.versionsBackup
