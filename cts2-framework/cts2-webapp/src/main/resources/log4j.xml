@@ -14,9 +14,6 @@
 	<logger name="org.cts2.rest">
 		<level value="info" />
 	</logger>
-	<logger name="it.linksmt.cts2.plugin.sti">
-		<level value="info" />
-	</logger>
 	
 	<!-- 3rdparty Loggers -->
 	<logger name="org.springframework.core">

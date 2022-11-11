@@ -6,9 +6,9 @@
 	targetNamespace="http://www.omg.org/spec/CTS2/1.1/extensions/NamespaceServiceExtension"
 	elementFormDefault="qualified">
 	<xs:import namespace="http://www.omg.org/spec/CTS2/1.1/Core"
-		schemaLocation="https://www.omg.org/spec/CTS2/130601/core/Core.xsd" />
+		schemaLocation="../core/Core.xsd" />
 	<xs:import namespace="http://www.omg.org/spec/CTS2/1.1/CoreService"
-		schemaLocation="https://www.omg.org/spec/CTS2/130601/core/CoreService.xsd" />
+		schemaLocation="../core/CoreService.xsd" />
 
 	<xs:element name="NamespaceDirectory">
 		<xs:annotation>

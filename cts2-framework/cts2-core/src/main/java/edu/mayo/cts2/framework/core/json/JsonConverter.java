@@ -61,7 +61,6 @@ import java.util.Map.Entry;
 public class JsonConverter {
 
 	private static final String MODEL_PACKAGE = "edu.mayo.cts2.framework.model";
-	private static final String WSDL_PACKAGE = "edu.mayo.cts2.framework.model.wsdl.*";
 
     private static final String LIST_SUFFIX = "List";
     private static final String CHOICE_VALUE = "_choiceValue";
@@ -95,8 +94,7 @@ public class JsonConverter {
 		Reflections reflections = new Reflections(new ConfigurationBuilder()
 				.filterInputsBy(
 						new FilterBuilder().include(
-								"edu.mayo.cts2.framework.model.*").exclude(
-								WSDL_PACKAGE)).setUrls(
+								"edu.mayo.cts2.framework.model.*")).setUrls(
 						ClasspathHelper.forPackage(MODEL_PACKAGE)));
 
 		Set<Class<? extends Cts2ModelObject>> types = reflections
@@ -289,24 +287,11 @@ public class JsonConverter {
 		@Override
 		public JsonElement serialize(TsAnyType tsAnyType, Type typeOfSrc,
 				JsonSerializationContext context) {
-			if(tsAnyType == null){
+			if(tsAnyType == null || tsAnyType.getContent() == null){
 				return null;
 			}
 			
-			if (tsAnyType.getAnyObject() != null && (tsAnyType.getAnyObject().length > 0)) {
-				Object[] anyVal = tsAnyType.getAnyObject();
-				JsonArray retVal = new JsonArray();
-				for (int i = 0; i < anyVal.length; i++) {
-					retVal.add(new JsonPrimitive(String.valueOf(anyVal[i])));
-				}
-				return retVal;
-			}
-			
-			if (tsAnyType.getContent() != null) {
-				return new JsonPrimitive(tsAnyType.getContent());
-			}
-			
-			return null;
+			return new JsonPrimitive(tsAnyType.getContent());
 		}
 
 		/* (non-Javadoc)
@@ -317,20 +302,6 @@ public class JsonConverter {
 				JsonDeserializationContext context) throws JsonParseException {
 			if(json == null){
 				return null;
-			}
-			
-			if (json.isJsonArray()) {
-				JsonArray arrVal = json.getAsJsonArray();
-				String[] anyVal = new String[arrVal.size()];
-				
-				for (int i = 0; i < arrVal.size(); i++) {
-					anyVal[i] = arrVal.get(i).getAsString();
-				}
-				
-				TsAnyType tsAnyType = new TsAnyType();
-				tsAnyType.setAnyObject(anyVal);
-				
-				return tsAnyType;
 			}
 			
 			if(! json.isJsonPrimitive()){

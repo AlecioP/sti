@@ -41,9 +41,9 @@ public interface RestConfig {
 	
 	public boolean getShowHomePage();
 
-	public boolean getAllowSoap();
-
     public String getSupportEmail();
     
     public String getAlternateHomePage();
+    
+    public Integer getMaxToReturn();
 }

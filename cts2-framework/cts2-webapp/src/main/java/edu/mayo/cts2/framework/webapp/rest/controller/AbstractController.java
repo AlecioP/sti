@@ -329,6 +329,12 @@ public abstract class AbstractController extends AbstractServiceAwareBean implem
 			if(maxToReturn != null){
 				page.setMaxToReturn(maxToReturn);
 			}
+			else {
+				// get default page size if it is not null in the properties file
+				if (getRestConfig().getMaxToReturn() != null) {
+					page.setMaxToReturn(getRestConfig().getMaxToReturn().intValue());
+				}
+			}
 			
 			if(pageNumber != null){
 				page.setPage(pageNumber);
@@ -371,20 +377,7 @@ public abstract class AbstractController extends AbstractServiceAwareBean implem
 	 * @return the scoped entity name
 	 */
 	protected ScopedEntityName getScopedEntityName(String entityName, String codeSystemName){
-		ScopedEntityName scopedName = new ScopedEntityName();
-		
-		String[] nameParts = entityName.split(":");
-		if(nameParts.length == 2){
-			scopedName.setNamespace(nameParts[0]);
-			scopedName.setName(nameParts[1]);
-		} else if(nameParts.length == 1){
-			scopedName.setNamespace(codeSystemName);
-			scopedName.setName(nameParts[0]);
-		} else {
-			throw new IllegalStateException();
-		}
-		
-		return scopedName;
+		return EncodingUtils.decodeEntityName(entityName, codeSystemName);
 	}
 	
 	protected <T> Set<T> createSet(T element){

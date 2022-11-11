@@ -46,19 +46,17 @@ import java.util.Hashtable;
 public class MetaTypeRestConfig extends AbstractConfigurableExportedService implements RestConfig {
 	
 	public static final String ALLOW_HTML_RENDERING = "allowHtmlRendering";
-	public static final String ALLOW_SOAP = "allowSoap";
 	public static final String SHOW_STACK_TRACE = "showStackTrace";
 	public static final String SHOW_HOME_PAGE = "showHomePage";
     public static final String SUPPORT_EMAIL = "supportEmail";
     public static final String ALTERNATE_HOME_PAGE = "alternateHomePage";
+    public static final String MAX_TO_RETURN = "maxToReturn";
+    
 
     private static final String SERVICE_PID = "edu.mayo.cts2.framework.webapp.rest.config";
 	
 	private static final boolean ALLOW_HTML_RENDERING_DEFAULT = false;
 	private boolean allowHtmlRendering = ALLOW_HTML_RENDERING_DEFAULT;
-	
-	private static final boolean ALLOW_SOAP_DEFAULT = false;
-	private boolean allowSoap = ALLOW_SOAP_DEFAULT;
 	
 	private static final boolean SHOW_STACK_TRACE_DEFAULT = false;
 	private boolean showStackTrace = SHOW_STACK_TRACE_DEFAULT;
@@ -67,6 +65,8 @@ public class MetaTypeRestConfig extends AbstractConfigurableExportedService impl
 	private boolean showHomePage = SHOW_HOME_PAGE_DEFAULT;
 	
 	private String alternateHomePage = null;
+	
+	private Integer maxToReturn = null;
 
 	/* (non-Javadoc)
 	 * @see org.osgi.service.metatype.MetaTypeProvider#getLocales()
@@ -81,20 +81,23 @@ public class MetaTypeRestConfig extends AbstractConfigurableExportedService impl
 	 */
 	@Override
 	public void updated(@SuppressWarnings("rawtypes") Dictionary properties) throws ConfigurationException {
-		if(properties != null){
-			boolean allow = BooleanUtils.toBooleanDefaultIfNull( (Boolean) properties.get(ALLOW_HTML_RENDERING), ALLOW_HTML_RENDERING_DEFAULT);
-			this.allowHtmlRendering = allow;
+		if(properties != null){	
+			String str_allow = (String)properties.get(ALLOW_HTML_RENDERING);
+			this.allowHtmlRendering = str_allow != null ? Boolean.valueOf(str_allow) : ALLOW_HTML_RENDERING_DEFAULT;
+
+			String str_show = (String)properties.get(SHOW_STACK_TRACE);
+			this.showStackTrace = str_show != null ? Boolean.valueOf(str_show) : SHOW_STACK_TRACE_DEFAULT;
 			
-			boolean show = BooleanUtils.toBooleanDefaultIfNull( (Boolean) properties.get(SHOW_STACK_TRACE), SHOW_STACK_TRACE_DEFAULT);
-			this.showStackTrace = show;
-			
-			boolean home = BooleanUtils.toBooleanDefaultIfNull( (Boolean) properties.get(SHOW_HOME_PAGE), SHOW_HOME_PAGE_DEFAULT);
-			this.showHomePage = home;
-			
-			boolean soap = BooleanUtils.toBooleanDefaultIfNull( (Boolean) properties.get(ALLOW_SOAP), ALLOW_SOAP_DEFAULT);
-			this.allowSoap = soap;
-			
+			String str_home = (String)properties.get(SHOW_HOME_PAGE);
+			this.showHomePage = str_home != null ? Boolean.valueOf(str_home) : SHOW_HOME_PAGE_DEFAULT;
+
 			this.alternateHomePage = (String) properties.get(ALTERNATE_HOME_PAGE);
+						
+			String str_maxToReturn = (String)properties.get(MAX_TO_RETURN);
+			if (str_maxToReturn != null && Integer.valueOf(str_maxToReturn) != null){
+				this.maxToReturn = Integer.valueOf(str_maxToReturn);
+			}
+			
 		}		
 	}
 
@@ -141,11 +144,6 @@ public class MetaTypeRestConfig extends AbstractConfigurableExportedService impl
 	public boolean getShowHomePage() {
 		return this.checkEnvironmentVariableOverride(SHOW_HOME_PAGE, this.showHomePage);
 	}
-	
-	@Override
-	public boolean getAllowSoap() {
-		return this.checkEnvironmentVariableOverride(ALLOW_SOAP, this.allowSoap);
-	}
 
     @Override
     public String getSupportEmail() {
@@ -164,7 +162,10 @@ public class MetaTypeRestConfig extends AbstractConfigurableExportedService impl
 	protected String getMetatypeXmlPath() {
 		return "/rest/webapp-rest-metatype.xml";
 	}
-	
-	
 
+	@Override
+	public Integer getMaxToReturn() {
+		return this.maxToReturn;
+	}
+	
 }

@@ -37,7 +37,6 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.twdata.pkgscanner.DefaultOsgiVersionConverter;
@@ -197,8 +196,8 @@ class ExportsBuilder
         {
             scanner.enableDebug();
         } else {
-        	org.apache.log4j.Logger.getLogger(
-        		ExportPackageListBuilder.class).setLevel(Level.ERROR);
+        	org.apache.logging.log4j.LogManager.getLogger(
+        		ExportPackageListBuilder.class).atError();
         }
 
         Collection<ExportPackage> exports = scanner.scan();
