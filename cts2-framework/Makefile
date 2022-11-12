@@ -5,12 +5,14 @@ THIS_DIR := $(dir $(MKF_ABS))
 JAVA_HOME = /usr/lib/jvm/jre
 JAVA_OPTS = -Djava.security.egd=file:///dev/urandom
 
-CATALINA_BASE = /opt/tomcat/apache-tomcat-9.0.65
-CATALINA_HOME = /opt/tomcat/apache-tomcat-9.0.65
-CATALINA_PID = /opt/tomcat/apache-tomcat-9.0.65/temp/tomcat.pid
+TOMCAT_V = 9.0.68
+TOMCAT_USER_HOME = /opt/tomcat
+CATALINA_BASE = /opt/tomcat/apache-tomcat-$(TOMCAT_V)
+CATALINA_HOME = /opt/tomcat/apache-tomcat-$(TOMCAT_V)
+CATALINA_PID = /opt/tomcat/apache-tomcat-$(TOMCAT_V)/temp/tomcat.pid
 CATALINA_OPTS = -Xms512M -Xmx1024M -server -XX:+UseParallelGC -Djava.security.manager -Djava.security.policy=$(CATALINA_BASE)/conf/catalina.policy
 
-TOMCAT_V = 9.0.65
+
 
 # Procedure download_lib
 # Parameters :
@@ -89,9 +91,10 @@ tomcat:
 
 # Create a user that will run tomcat service
 
-	read -n 1 -p "Skip useradd ? (y/n)" action &&\
+	@read -n 1 -p "Skip useradd ? (y/n)" action &&\
 	echo " " &&\
-	if [ "$${action}" != "y" ]; then sudo useradd -M -U -s /bin/false tomcat && sudo -u tomcat mkdir /opt/tomcat; fi
+	if [ "$${action}" != "y" ]; then echo 'Creating user tomcat with home in $(TOMCAT_USER_HOME)' && sudo useradd -m $(TOMCAT_USER_HOME) -U -s /bin/false tomcat ; fi
+#&& sudo -u tomcat mkdir /opt/tomcat; fi
 
 # Download
 	$(call download_lib,apache-tomcat-$(TOMCAT_V).tar.gz,"https://dlcdn.apache.org/tomcat/tomcat-9/v$(TOMCAT_V)/bin/apache-tomcat-$(TOMCAT_V).tar.gz")
@@ -122,7 +125,7 @@ tomcat:
 
 # Create a service manageable from sysctl
 
-	sudo bash -c "cat  $(THIS_DIR)/conf/tomcat-service >/etc/systemd/system/tomcat.service"
+	sudo bash -c "cat  $(THIS_DIR)conf/tomcat-service >/etc/systemd/system/tomcat.service"
 
 # Add to sysctl
 	sudo systemctl daemon-reload
@@ -241,7 +244,7 @@ liferay-build: #clean-liferay-build
 	- sudo rm -r $(CATALINA_HOME)/webapps/ROOT/
 	sudo -u tomcat sh -c "mkdir $(CATALINA_HOME)/webapps/ROOT/"
 
-	sudo -u tomcat sh -c "unzip /tmp/$(LIFERAY_WAR) -d $(CATALINA_HOME)/webapps/ROOT"
+	sudo -u tomcat sh -c "unzip -q /tmp/$(LIFERAY_WAR) -d $(CATALINA_HOME)/webapps/ROOT"
 
 liferay: liferay-deps-download liferay-build
 
@@ -268,6 +271,9 @@ clean-catalina-log:
 
 LIFERAY_HOME= $(CATALINA_HOME)/..
 
+COMPILED_WAR_NAME= cts2-webapp-SNAPSHOT.war
+STANDARD_WAR_NAME= cts2framework.war
+
 update-pom:
 	mvn versions:use-latest-releases
 
@@ -288,6 +294,15 @@ cts2-plugin:
 #	read -n 1 -p "Ctrl+c to stop, anything else to continue"
 	@echo " "
 
-	
-	sudo cp $(THIS_DIR)cts2-webapp/target/cts2-webapp-1.2.0.FINAL.war $(CATALINA_HOME)/webapps/cts2-webapp.war
-	sudo chown tomcat: $(CATALINA_HOME)/webapps/cts2-webapp.war
+	sudo mv $(THIS_DIR)cts2-webapp/target/$(COMPILED_WAR_NAME) $(THIS_DIR)cts2-webapp/target/$(STANDARD_WAR_NAME)
+	sudo chown tomcat: $(THIS_DIR)cts2-webapp/target/$(STANDARD_WAR_NAME)
+	sudo cp $(THIS_DIR)cts2-webapp/target/$(STANDARD_WAR_NAME) $(CATALINA_HOME)/webapps/
+
+troubleshoot:
+	@TO_CHECK=$$( sudo cat $(CATALINA_HOME)/logs/catalina.out | grep 'Configuration Directory' | sed -Ee 's/^.*Configuration Directory\: (.*)$$/\1/g' | tail -n 1) && \
+	DIR_SOLVED=$$(readlink -f $(LIFERAY_HOME) ) && \
+	echo $$DIR_SOLVED && \
+	if [ ! -d $$(echo $$TO_CHECK) ]; then echo "Dir $${TO_CHECK} does not exist. The user running tomcat has no home directory" && echo "Try running the command 'usermod -d $${DIR_SOLVED} tomcat'" ; fi
+
+test-user-tomcat:
+	@if test -z $$(sudo cat /etc/passwd | grep '^tomcat' | grep $$(readlink -f $(LIFERAY_HOME) )) ; then echo 'User tomcat does not exist or has no home directory' ; else echo 'User set properly';  fi
