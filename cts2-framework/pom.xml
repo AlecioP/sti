@@ -40,8 +40,8 @@
 
 	<scm>
 		<developerConnection>scm:git:git@github.com:lexevs/cts2-framework.git</developerConnection>
-  	  <tag>cts2-framework-1.3.8.FINAL</tag>
-  </scm>
+		<tag>cts2-framework-1.3.8.FINAL</tag>
+	</scm>
 
 	<modules>
 		<module>cts2-model</module>
@@ -80,23 +80,23 @@
 	</distributionManagement>
 
 	<reporting>
-	<plugins>
+		<plugins>
 
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-jxr-plugin</artifactId>
-			<version>2.3</version>
-		</plugin>
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-project-info-reports-plugin</artifactId>
-			<version>2.2</version>
-			<configuration>
-				<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-				<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-			</configuration>
-		</plugin>
-	</plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<version>2.3</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-project-info-reports-plugin</artifactId>
+				<version>2.2</version>
+				<configuration>
+					<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+					<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+				</configuration>
+			</plugin>
+		</plugins>
 	</reporting>
 
 	<build>
@@ -112,7 +112,7 @@
 					<failOnError>false</failOnError>
 				</configuration>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
@@ -167,9 +167,9 @@
 					<source>${java-version}</source>
 					<target>${java-version}</target>
 					<encoding>${project.build.sourceEncoding}</encoding>
-			        <fork>true</fork>
-			        <meminitial>128m</meminitial>
-			        <maxmem>512m</maxmem>
+					<fork>true</fork>
+					<meminitial>128m</meminitial>
+					<maxmem>512m</maxmem>
 				</configuration>
 			</plugin>
 
@@ -179,8 +179,8 @@
 				<version>1.2</version>
 				<configuration>
 					<providerSelection>1.7</providerSelection>
-                    <source />
-                </configuration>
+					<source />
+				</configuration>
 				<executions>
 					<execution>
 						<goals>
@@ -244,8 +244,7 @@
 						<configuration>
 							<argLine>-Xmx1028m</argLine>
 							<argLine>-XX:MaxPermSize=${test.permgen.max}</argLine>
-							<excludes>
-							</excludes>
+							<excludes></excludes>
 							<systemProperties>
 								<systemProperty>
 									<name>test.context</name>
@@ -257,62 +256,74 @@
 				</executions>
 			</plugin>
 
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-site-plugin</artifactId>
-                <version>3.2</version>
-	        </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.2</version>
+			</plugin>
 
 		</plugins>
 		<pluginManagement>
 			<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.0</version>
-				<dependencies>
-					<dependency><!-- add support for ssh/scp -->
-						<groupId>org.apache.maven.wagon</groupId>
-						<artifactId>wagon-ssh</artifactId>
-						<version>1.0</version>
-					</dependency>
-				</dependencies>
-<!--				<configuration>-->
-<!--					<reportPlugins>-->
-<!--						<plugin>-->
-<!--							<groupId>org.apache.maven.plugins</groupId>-->
-<!--							<artifactId>maven-javadoc-plugin</artifactId>-->
-<!--							<version>2.8</version>-->
-<!--							<configuration>-->
-<!--					          	<minmemory>128m</minmemory>-->
-<!--								<maxmemory>512m</maxmemory>-->
-<!--								<additionalJOption>-J-XX:MaxPermSize=512m</additionalJOption>-->
-<!--					        </configuration>-->
-<!--						</plugin>-->
-<!--						<plugin>-->
-<!--							<groupId>org.apache.maven.plugins</groupId>-->
-<!--							<artifactId>maven-jxr-plugin</artifactId>-->
-<!--							<version>2.3</version>-->
-<!--						</plugin>-->
-<!--						<plugin>-->
-<!--							<groupId>org.apache.maven.plugins</groupId>-->
-<!--							<artifactId>maven-project-info-reports-plugin</artifactId>-->
-<!--							<version>2.2</version>-->
-<!--                            <configuration>-->
-<!--                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>-->
-<!--                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>-->
-<!--                            </configuration>-->
-<!--						</plugin>-->
-<!--					</reportPlugins>-->
-<!--				</configuration>-->
-			</plugin>
-			
+<!-- Deployment working fine, but webapp not available in tomcat -->
+				<!-- <plugin>
+					<groupId>org.apache.tomcat.maven</groupId>
+					<artifactId>tomcat7-maven-plugin</artifactId>
+					<version>2.2</version>
+					<configuration>
+						<server>maven-tomcat-war-deployment-server</server>
+						<url>http://localhost:8080/manager/text</url>
+						<path>/cts2</path>
+					</configuration>
+				</plugin> -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-site-plugin</artifactId>
+					<version>3.0</version>
+					<dependencies>
+						<dependency>
+							<!-- add support for ssh/scp -->
+							<groupId>org.apache.maven.wagon</groupId>
+							<artifactId>wagon-ssh</artifactId>
+							<version>1.0</version>
+						</dependency>
+					</dependencies>
+					<!--				<configuration>-->
+					<!--					<reportPlugins>-->
+					<!--						<plugin>-->
+					<!--							<groupId>org.apache.maven.plugins</groupId>-->
+					<!--							<artifactId>maven-javadoc-plugin</artifactId>-->
+					<!--							<version>2.8</version>-->
+					<!--							<configuration>-->
+					<!--					          	<minmemory>128m</minmemory>-->
+					<!--								<maxmemory>512m</maxmemory>-->
+					<!--								<additionalJOption>-J-XX:MaxPermSize=512m</additionalJOption>-->
+					<!--					        </configuration>-->
+					<!--						</plugin>-->
+					<!--						<plugin>-->
+					<!--							<groupId>org.apache.maven.plugins</groupId>-->
+					<!--							<artifactId>maven-jxr-plugin</artifactId>-->
+					<!--							<version>2.3</version>-->
+					<!--						</plugin>-->
+					<!--						<plugin>-->
+					<!--							<groupId>org.apache.maven.plugins</groupId>-->
+					<!--							<artifactId>maven-project-info-reports-plugin</artifactId>-->
+					<!--							<version>2.2</version>-->
+					<!--                            <configuration>-->
+					<!--                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>-->
+					<!--                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>-->
+					<!--                            </configuration>-->
+					<!--						</plugin>-->
+					<!--					</reportPlugins>-->
+					<!--				</configuration>-->
+				</plugin>
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>2.7</version>
 				</plugin>
-			
+
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-install-plugin</artifactId>
@@ -324,14 +335,14 @@
 					<artifactId>maven-release-plugin</artifactId>
 					<version>2.5</version>
 					<dependencies>
-				    	<dependency>
-				        	<groupId>org.apache.maven.scm</groupId>
-				          	<artifactId>maven-scm-provider-gitexe</artifactId>
-				          	<version>1.8.1</version>
-				        </dependency>
-			       </dependencies>
+						<dependency>
+							<groupId>org.apache.maven.scm</groupId>
+							<artifactId>maven-scm-provider-gitexe</artifactId>
+							<version>1.8.1</version>
+						</dependency>
+					</dependencies>
 				</plugin>
-				
+
 				<!--This plugin's configuration is used to store Eclipse m2e settings 
 					only. It has no influence on the Maven build itself. -->
 
@@ -378,10 +389,10 @@
 
 	<dependencies>
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-api</artifactId>
-		    <version>2.17.1</version>
-		    <exclusions>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.17.1</version>
+			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
 					<artifactId>mail</artifactId>
@@ -402,10 +413,10 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.logging.log4j</groupId>
-		    <artifactId>log4j-core</artifactId>
-		    <version>2.17.1</version>
-		    <exclusions>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.17.1</version>
+			<exclusions>
 				<exclusion>
 					<groupId>javax.mail</groupId>
 					<artifactId>mail</artifactId>
@@ -425,7 +436,7 @@
 			</exclusions>
 			<scope>runtime</scope>
 		</dependency>
-	
+
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
 			<artifactId>groovy-all</artifactId>
@@ -467,11 +478,11 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>com.ibm.icu</groupId>
-            <artifactId>icu4j</artifactId>
-            <version>3.4.4</version>
-        </dependency>
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
+		</dependency>
 
 		<!-- Test -->
 		<dependency>
@@ -536,11 +547,11 @@
 			<url>https://repository.springsource.com/maven/bundles/milestone</url>
 		</repository>
 
-<!--		<repository>-->
-<!--			<id>scala-tools.org</id>-->
-<!--			<name>Scala-Tools Maven2 Repository</name>-->
-<!--			<url>http://scala-tools.org/repo-releases</url>-->
-<!--		</repository>-->
+		<!--		<repository>-->
+		<!--			<id>scala-tools.org</id>-->
+		<!--			<name>Scala-Tools Maven2 Repository</name>-->
+		<!--			<url>http://scala-tools.org/repo-releases</url>-->
+		<!--		</repository>-->
 
 		<!-- repository>
 			<id>clojure-releases</id>
