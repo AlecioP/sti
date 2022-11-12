@@ -54,11 +54,11 @@ public interface QueryService<ListEntry,Summary,Q extends ResourceQuery> extends
 	 * @param String uri that represents the resource
 	 * @return the resource summaries
 	 */
-	public DirectoryResult<Summary> getResourceSummaries(
-			Q query,
-			SortCriteria sortCriteria,
-			Page page,
-			String uri);
+	// public DirectoryResult<Summary> getResourceSummaries(
+	// 		Q query,
+	// 		SortCriteria sortCriteria,
+	// 		Page page,
+	// 		String uri);
 	/**
 	 * Gets the resource summaries.
 	 *
