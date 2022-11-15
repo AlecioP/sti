@@ -1,0 +1,11 @@
+# https://github.com/aleciop/sti-service
+sti-service/
+# https://github.com/aleciop/sti-cts2-portlets-build
+sti-cts2-portlets-build/
+# Test data folder
+data/
+# Apache Solr install script
+*install_solr_service.sh
+# Others
+*.DS_Store*
+._.
