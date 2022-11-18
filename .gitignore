@@ -6,6 +6,8 @@ sti-cts2-portlets-build/
 data/
 # Apache Solr install script
 *install_solr_service.sh
+# Services logs
+*.log
 # Others
 *.DS_Store*
 ._.

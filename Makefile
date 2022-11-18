@@ -13,7 +13,8 @@ install-postgresql:
 	sudo postgresql-setup initdb
 	sudo systemctl enable postgresql
 	sudo systemctl start postgresql
-SOLR_V=9.0.0
+# Last lucene version compatible with 6.x core
+SOLR_V=7.7.3
 SOLR_ARCHIVE=solr-$(SOLR_V).tgz
 
 solr-start:
@@ -25,7 +26,7 @@ solr-stop:
 
 # Depends on framework target cause creates Tomcat user
 solr: build-framework
-	@$(call download_lib,$(SOLR_ARCHIVE),"https://dlcdn.apache.org/solr/solr/$(SOLR_V)/$(SOLR_ARCHIVE)") 
+	@$(call download_lib,$(SOLR_ARCHIVE),"https://archive.apache.org/dist/lucene/solr/$(SOLR_V)/$(SOLR_ARCHIVE)") 
 	which lsof && echo 'lsof installed' || sudo yum install lsof
 	@if test -d "/etc/init.d" ; then echo "Directory /etc/init.d already exists. Install of chkconfig could fail" ; fi 
 	which chkconfig && echo 'chkconfig installed' || sudo yum install chkconfig
@@ -38,7 +39,7 @@ solr: build-framework
 	sudo chown -R tomcat: /opt/solr-$(SOLR_V)
 
 solr-import-indexes: solr-stop #solr
-	cd ./sti-service/ && make  
+	cd ./sti-service/ && make  AM_DEBUG=false
 
 test:
 	echo $(SOLR_ARCHIVE:.tgz=)
@@ -48,7 +49,9 @@ clean-solr:
 	-sudo rm /opt/solr
 	-sudo rm -r /opt/solr*
 	-sudo rm -r /var/solr
+	-sudo chkconfig --del solr
 	-sudo rm /etc/init.d/solr
+	-sudo rm -r /etc/default/solr.in.sh
 ######## Functions ##########
 
 # Procedure download_lib
