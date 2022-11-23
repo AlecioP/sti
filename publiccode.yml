@@ -1,0 +1,196 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+applicationSuite: STI
+categories:
+  - data-collection
+  - data-visualization
+  - knowledge-management
+  - resource-management
+dependsOn:
+  open:
+    - name: JDK
+      optional: false
+      version: ' 1.8'
+      versionMax: ''
+      versionMin: ''
+    - name: PostgresSQL
+      optional: false
+      version: '9.6'
+      versionMax: ''
+      versionMin: ''
+    - name: Liferay
+      optional: false
+      version: liferay-portal-6.2-ce-ga6
+      versionMax: ''
+      versionMin: ''
+    - name: Solr
+      optional: false
+      version: ''
+      versionMax: ''
+      versionMin: 6.3.0
+    - name: Pentaho Data Integration
+      optional: false
+      version: pdi-ce-5.4.0.1-130
+      versionMax: ''
+      versionMin: ''
+    - name: Virtuoso
+      optional: false
+      version: 7.2.6
+      versionMax: ''
+      versionMin: ''
+description:
+  it:
+    features:
+      - Upload Codifiche/Value set/Mapping
+      - Visualizzazione e navigazione delle Codifiche/Value Set/Mapping
+      - Cross-Mapping tra Codifiche
+      - Esportazione Codifiche/Value set/Mapping
+      - Versioning / History
+      - Approvazione dei Cross-mapping tra Codifiche
+      - Estensione delle relazioni semantiche tramite visualizzazione Ontologie
+      - Gestione e navigazione risorse multi-dominio
+      - 'Ricerca avanzata '
+      - Richieste a servizio
+      - Conforme alle specifiche CTS-2 HL7
+    genericName: Terminology Service
+    localisedName: STI
+    longDescription: |
+      STI è un Servizio Terminologico Integrato basato sul protocollo standard
+
+
+
+      Common Terminology Services - Release 2 (CTS2) di HL7, finalizzato a
+
+
+
+      fornire supporto a Regioni, Province Autonome e professionisti della
+
+
+
+      salute, per la gestione integrata dei sistemi di codifica previsti
+
+
+
+      nell’ambito del Fascicolo Sanitario Elettronico e disciplinati dal DPCM n.
+
+
+
+      178/2015 “Regolamento in materia di fascicolo sanitario elettronico.
+
+
+
+      Un servizio terminologico integrato (o server terminologico) è una
+
+
+
+      componente software integrata, eventualmente con altri servizi, che
+
+
+
+      permette l’accesso centralizzato al contenuto terminologico dei sistemi
+
+
+
+      di codifica utilizzati in ambito medico-sanitario (nel caso specifico) e
+
+
+
+      fornisce servizi di tipo terminologico (consultazione, ricerca, mapping,
+
+
+
+      export, verifica degli aggiornamenti, ecc.) per altre applicazioni che ne
+
+
+
+      facciano richiesta. Il servizio STI è rivolto a due categorie principali
+
+      di utenti:Operatori sanitari, MMG e laboratoristi da un lato, per ottenere
+
+      un supporto nel corretto uso delle terminologie per la codifica dei dati
+
+      nei due documenti previsti dalla norma (il Profilo Sanitario Sintetico e
+
+      il Referto di laboratorio); e applicazioni/servizi e referenti regionali
+
+      dall'altro, per un supporto di tipo amministrativo, per favorire
+
+      l'allineamento ai sistemi di codifica standardizzati previsti dalla norma.
+
+      La versione rilasciata in riuso permette anche di gestire terminologie e
+
+      codifiche multidominio e di caricare, gestire, mappare anche cataloghi o
+
+      terminologie locali.
+    shortDescription: |-
+      STI è un Servizio Terminologico finalizzato a dare supporto nella gestione
+      integrata di terminologie e sistemi di codifica usati nell'amboito del FSE
+developmentStatus: stable
+intendedAudience:
+  scope:
+    - government
+    - healthcare
+    - research
+    - science-and-technology
+it:
+  conforme:
+    gdpr: true
+    lineeGuidaDesign: false
+    misureMinimeSicurezza: false
+    modelloInteroperabilita: true
+  countryExtensionVersion: '0.2'
+  piattaforme:
+    anpr: false
+    cie: false
+    pagopa: false
+    spid: false
+  riuso:
+    codiceIPA: cnr
+legal:
+  license: GPL-3.0-or-later
+  mainCopyrightOwner: |-
+    Istituto di Informatica e Telematica - Consiglio Nazionale delle Ricerche
+
+
+    (IIT-CNR)
+  repoOwner: |-
+    Istituto di Informatica e Telematica - Consiglio Nazionale delle Ricerche
+
+
+    (IIT-CNR)
+localisation:
+  availableLanguages:
+    - it
+  localisationReady: true
+maintenance:
+  contacts:
+    - affiliation: IIT-CNR
+      email: elena.cardillo@iit.cnr.it
+      name: Elena Cardillo
+      phone: '+390984494955'
+    - affiliation: IIT-CNR
+      email: antonio.stumpo@cnr.it
+      name: Antonio Stumpo
+      phone: '+390984494955'
+    - affiliation: IIT-CNR
+      email: maria.taverniti@cnr.it
+      name: Maria Taverniti
+      phone: '+390984494940'
+  contractors:
+    - name: Links Management and Technology S.P.A
+      until: '2021-12-09'
+      website: 'https://www.linksmt.it/'
+  type: internal
+name: Servizio Terminologico Integrato
+platforms:
+  - linux
+  - web
+releaseDate: '2021-12-09'
+softwareType: standalone/web
+softwareVersion: '1.0'
+url: 'https://github.com/consiglionazionaledellericerche/STI'
+usedBy:
+  - Regione Umbria
