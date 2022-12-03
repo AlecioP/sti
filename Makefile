@@ -65,6 +65,7 @@ clean-solr:
 	-sudo rm /etc/init.d/solr
 	-sudo rm -r /etc/default/solr.in.sh
 
+KETTLE_PROP_PATH=/opt/tomcat/.kettle/kettle.properties
 
 PDI_USER_HOME=/opt/pdi
 PDI_VERSION=ce-9.3.0.0-428
@@ -130,6 +131,20 @@ pentaho:
 	$(call set_prop,/opt/tomcat/sti-dev.properties,kitchen\.job\.aic,$(subst /,\/,$(PDI_USER_HOME))\/sti-jobs\/ATC_AIC\/POPOLA_AIC\.kjb)
 	$(call set_prop,/opt/tomcat/sti-dev.properties,kitchen\.job\.atc,$(subst /,\/,$(PDI_USER_HOME))\/sti-jobs\/ATC_AIC\/POPOLA_ATC\.kjb)
 	$(call set_prop,/opt/tomcat/sti-dev.properties,kitchen\.job\.mapping\.atc\.aic,$(subst /,\/,$(PDI_USER_HOME))\/sti-jobs\/ATC_AIC\/POPOLA_FARMACI_EQUIVALENTI_MAPPING_ATC_AIC\.kjb)
+
+# Usually kettle.properties file should be created by kettle itself when PDI is started for the first time 
+# The file will be created under the home directory of the user running kettle in a subdirectory named '.kettle'
+# Therefore the full path should be /opt/tomcat/.kettle/kettle.properties
+
+	if test -f $(KETTLE_PROP_PATH) ; then sudo rm $(KETTLE_PROP_PATH) ; fi
+	su tomcat -c 'touch $(KETTLE_PROP_PATH)'
+	su tomcat -c 'echo "HOST_NAME=localhost" >> $(KETTLE_PROP_PATH)'
+	su tomcat -c 'echo "DATABASE_NAME=sti_import" >> $(KETTLE_PROP_PATH)'
+	su tomcat -c 'echo "PORT_NUMBER=5432" >> $(KETTLE_PROP_PATH)'
+# TODO set appropriate password and user (maybe use PSQL_PW variable)
+	su tomcat -c 'echo "DB_USER=" >> $(KETTLE_PROP_PATH)'
+	su tomcat -c 'echo "DB_PASSWORD=" >> $(KETTLE_PROP_PATH)'
+
 endif
 
 # Every workflow in package <it.linksmt.cts2.plugin.sti.service.changeset.impl> of 
@@ -146,13 +161,42 @@ endif
 # 
 # For example in class <NewVersionAicWorkflow> the variable POPOLA_AIC
 # is accessed using StiAppConfig and defines the path of a specific Kettle Job file
+
+SITEID_LPORTAL=21690
+GROUPID_LPORTAL=$(SITEID_LPORTAL)
+USERID_LPORTAL=21695
+FOLDERID_LPORTAL=21742
+STRUCTID_LPORTAL=21747
+ROLENAME_LPORTAL=ChangelogAlert
+PAGENAME_LPORTAL=changelog
+MAILSUBJ_LPORTAL=STI Aggiornamento
+
+portal-properties:
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.group\.id,$(GROUPID_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.user\.id,$(USERID_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.folder\.id,$(FOLDERID_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.structure\.id,$(STRUCTID_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.role\.alert\.name,$(ROLENAME_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.page\.name,$(PAGENAME_LPORTAL))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,sti\.changelog\.email\.subject,$(MAILSUBJ_LPORTAL))
+
 sti-env:
 	sudo cp ./sti-cts2-portlets-build/extra/config/sti-dev.properties /opt/tomcat/ || echo "sti-dev already exists in HOME directory of tomcat"
 	-sudo chown tomcat: /opt/tomcat/sti-dev.properties
 	su tomcat -c 'echo "export STI_CTS2_CONFIG=\"/opt/tomcat/sti-dev.properties\"" >>/opt/tomcat/.bash_profile'
+	su tomcat -c 'mkdir ~/stiIO/ 2>/dev/null || (echo "stiIO/ exists already. Deleting and recreating" && rm -r ~/stiIO/ && mkdir ~/stiIO/)'
+	su tomcat -c 'mkdir ~/stiIO/import'
+	su tomcat -c 'mkdir ~/stiIO/export'
+	$(call set_prop,/opt/tomcat/sti-dev.properties,filesystem\.import\.base\.path,\/opt\/tomcat\/stiIO\/import)
+	$(call set_prop,/opt/tomcat/sti-dev.properties,filesystem\.export\.base\.path,\/opt\/tomcat\/stiIO\/export)
+
 
 test-prop-set:
 	$(call set_prop,/opt/tomcat/sti-dev.properties,db\.sti\.username,foo)
+
+install-node:
+	curl -sL https://rpm.nodesource.com/setup_14.x | sudo bash -
+	sudo yum install -y nodejs
 
 ######## Macros ##########
 
@@ -176,3 +220,7 @@ endef
 define set_prop
 	sudo sed -i -Ee 's;^$(2)=.*$$;$(2)=$(3);g' $(1)
 endef
+
+# <import com.liferay> si trova in 
+# sti-cts2-portlets-build : it.linksmt.cts2.portlet.search.rest : ManageCodeSystemController.java
+# sti-cts2-portlets-build : it.linksmt.cts2.portlet.search.util : ChangelogUtils.java

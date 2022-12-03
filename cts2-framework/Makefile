@@ -163,23 +163,55 @@ clean-liferay:
 	sudo rm /tmp/javax.mail*
 	sudo rm /tmp/persistence*
 
-LIFERAY_WAR =liferay-portal-6.2-ce-ga6-20160112152609836.war
-LIFERAY_DEP =liferay-portal-dependencies-6.2-ce-ga6-20160112152609836.zip
+# New versions could be
+# LIFERAY_V=7.3.5-ga6-20200930172312275
+# LR_COMPACT_V=7.3.5%20GA6
+# LR_SUPPORT_TOMCAT_V=7.0.0-nightly
 
-SUPPORT_JAR =support-tomcat-6.2.1.jar
-JTA_JAR =jta-1.1.jar
-JAVAMAIL_JAR =javax.mail-1.6.2.jar
-PERSISTENCE_JAR =persistence-api-1.0.2.jar
-JDBC_JAR =postgresql-42.5.0.jar
-JAF_JAR =activation-1.1.1.jar
+LIFERAY_V=6.2-ce-ga6-20160112152609836
+LR_COMPACT_V=6.2.5%20GA6
+LR_SUPPORT_TOMCAT_V=6.2.1
+
+LIFERAY_WAR =liferay-portal-$(LIFERAY_V).war
+LIFERAY_DEP =liferay-portal-dependencies-$(LIFERAY_V).zip
+LR_WAR_LINK=https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/$(LR_COMPACT_V)/$(LIFERAY_WAR)
+LR_DEP_LINK=https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/$(LR_COMPACT_V)/$(LIFERAY_DEP)
+
+SUPPORT_JAR =support-tomcat-$(LR_SUPPORT_TOMCAT_V).jar
+LR_SUPPORT_TOMCAT_LINK=https://repo1.maven.org/maven2/com/liferay/portal/support-tomcat/$(LR_SUPPORT_TOMCAT_V)/$(SUPPORT_JAR)
+
+# New versions could be
+# JTA_V=1.1
+# JMAIL_V=1.6.2
+# PERSISTENCE_V=1.0.2
+# PGSQL_V=42.5.1
+# JAF_V=1.1.1
+
+JTA_V=1.1
+JMAIL_V=1.6.2
+PERSISTENCE_V=1.0.2
+PGSQL_V=42.5.0
+JAF_V=1.1.1
+
+JTA_JAR =jta-$(JTA_V).jar
+JAVAMAIL_JAR =javax.mail-$(JMAIL_V).jar
+PERSISTENCE_JAR =persistence-api-$(PERSISTENCE_V).jar
+JDBC_JAR =postgresql-$(PGSQL_V).jar
+JAF_JAR =activation-$(JAF_V).jar
+
+JTA_LINK=https://repo1.maven.org/maven2/javax/transaction/jta/$(JTA_V)/$(JTA_JAR)
+JMAIL_LINK=https://maven.java.net/content/repositories/releases/com/sun/mail/javax.mail/$(JMAIL_V)/$(JAVAMAIL_JAR)
+PERS_LINK=https://repo1.maven.org/maven2/javax/persistence/persistence-api/$(PERSISTENCE_V)/$(PERSISTENCE_JAR)
+JDBC_LINK=https://repo1.maven.org/maven2/org/postgresql/postgresql/$(PGSQL_V)/$(JDBC_JAR)
+JAF_LINK=https://repo1.maven.org/maven2/javax/activation/activation/$(JAF_V)/$(JAF_JAR)
 
 liferay-deps-download:
 # Liferay libs from https://sourceforge.net/projects/lportal/files/Liferay%20Portal/6.2.5%20GA6/
 # Reference : https://help.liferay.com/hc/en-us/articles/360017903112-Installing-Liferay-on-Tomcat-7
 	
-	$(call download_lib,$(LIFERAY_WAR),"https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/6.2.5%20GA6/$(LIFERAY_WAR)")
+	$(call download_lib,$(LIFERAY_WAR),"$(LR_WAR_LINK)")
 	
-	$(call download_lib,$(LIFERAY_DEP),"https://master.dl.sourceforge.net/project/lportal/Liferay%20Portal/6.2.5%20GA6/$(LIFERAY_DEP)")
+	$(call download_lib,$(LIFERAY_DEP),"$(LR_DEP_LINK)")
 	
 	if [ ! -f "$(CATALINA_HOME)/lib/ext" ]; then sudo -u tomcat mkdir  $(CATALINA_HOME)/lib/ext; fi
 	
@@ -188,23 +220,23 @@ liferay-deps-download:
 
 	sudo -u tomcat unzip -j /tmp/$(LIFERAY_DEP) -d $(CATALINA_HOME)/lib/ext
 
-	$(call download_lib,$(SUPPORT_JAR),"https://repo1.maven.org/maven2/com/liferay/portal/support-tomcat/6.2.1/$(SUPPORT_JAR)")
+	$(call download_lib,$(SUPPORT_JAR),"$(LR_SUPPORT_TOMCAT_LINK)")
 	sudo -u tomcat cp /tmp/$(SUPPORT_JAR) $(CATALINA_HOME)/lib/ext
 	
-	$(call download_lib,$(JTA_JAR),"https://repo1.maven.org/maven2/javax/transaction/jta/1.1/$(JTA_JAR)")
+	$(call download_lib,$(JTA_JAR),"$(JTA_LINK)")
 	sudo -u tomcat cp /tmp/$(JTA_JAR) $(CATALINA_HOME)/lib/ext
 	
-	$(call download_lib,$(JAVAMAIL_JAR),"https://maven.java.net/content/repositories/releases/com/sun/mail/javax.mail/1.6.2/$(JAVAMAIL_JAR)")
+	$(call download_lib,$(JAVAMAIL_JAR),"$(JMAIL_LINK)")
 	sudo -u tomcat cp /tmp/$(JAVAMAIL_JAR) $(CATALINA_HOME)/lib/ext
 	
-	$(call download_lib,$(PERSISTENCE_JAR),"https://repo1.maven.org/maven2/javax/persistence/persistence-api/1.0.2/$(PERSISTENCE_JAR)")
+	$(call download_lib,$(PERSISTENCE_JAR),"$(PERS_LINK)")
 	sudo -u tomcat cp /tmp/$(PERSISTENCE_JAR) $(CATALINA_HOME)/lib/ext
 	
-	$(call download_lib,$(JDBC_JAR),"https://repo1.maven.org/maven2/org/postgresql/postgresql/42.5.0/$(JDBC_JAR)")
+	$(call download_lib,$(JDBC_JAR),"$(JDBC_LINK)")
 	sudo -u tomcat cp /tmp/$(JDBC_JAR) $(CATALINA_HOME)/lib/ext
 # Skipping download of optional jars (assuming they're optional)
 
-	$(call download_lib,$(JAF_JAR),"https://repo1.maven.org/maven2/javax/activation/activation/1.1.1/$(JAF_JAR)")
+	$(call download_lib,$(JAF_JAR),"$(JAF_LINK)")
 	sudo -u tomcat cp /tmp/$(JAF_JAR) $(CATALINA_HOME)/lib/ext
 	
 clean-liferay-build:
