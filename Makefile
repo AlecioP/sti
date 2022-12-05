@@ -26,6 +26,32 @@ install-postgresql:
 	sudo systemctl enable postgresql && \
 	sudo systemctl start postgresql && \
 	(echo $(PSQL_PW) ; echo $(PSQL_PW) ) | sudo passwd postgres )
+
+PG_HOME=/var/lib/pgsql
+DUMPS_ARCHIVE=dump_dati_base.zip
+DUMPS_LINK=http://cosenza.iit.cnr.it/repo/sti/dati_base/$(DUMPS_ARCHIVE)
+
+db-setup:
+	$(call download_lib,$(DUMPS_ARCHIVE),"$(DUMPS_LINK)")
+	sudo unzip -q /tmp/$(DUMPS_ARCHIVE) -d $(PG_HOME)
+	sudo chown -R postgres: $(PG_HOME)/$(DUMPS_ARCHIVE:.zip=)/
+# Download and copy script sti_service.sql and sti_import.sql in postgres home directory
+	su postgres -c ' \
+		psql -c "create user sti_cts2 with encrypted passwd \'$(PSQL_PW)\' nosuperuser nocreatedb nocreaterole login " ' && \
+		psql -c "create database sti_import" && \
+		psql -c "create database sti_service" && \
+		psql sti_service < $(PG_HOME)/$(DUMPS_ARCHIVE:.zip=)/sti_service.sql && \
+		psql sti_import < $(PG_HOME)/$(DUMPS_ARCHIVE:.zip=)/sti_import.sql \
+	'
+	su postgres -c " \
+		sed -i '1s/^/local sti_import sti_cts2   password\n/' $(PG_HOME)/data/pg_hba.conf && \
+		sed -i '1s/^/local sti_service sti_cts2   password\n/' $(PG_HOME)/data/pg_hba.conf && \
+		sed -i '1s/^/host sti_import sti_cts2 ::1/128 password\n/' $(PG_HOME)/data/pg_hba.conf && \
+		sed -i '1s/^/local sti_import sti_cts2 ::1/128 password\n/' $(PG_HOME)/data/pg_hba.conf \
+	"
+	sudo systemctl reload postgres
+	sudo systemctl restart postgres
+
 # Last lucene version compatible with 6.x core
 SOLR_V=7.7.3
 SOLR_ARCHIVE=solr-$(SOLR_V).tgz
