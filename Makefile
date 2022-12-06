@@ -52,6 +52,11 @@ db-setup:
 	sudo systemctl reload postgres
 	sudo systemctl restart postgres
 
+	$(call set_prop,/opt/tomcat/sti-dev.properties,db\.sti\.username,sti_cts2)
+	$(call set_prop,/opt/tomcat/sti-dev.properties,db\.sti\.password,$(PSQL_PW))
+	$(call set_prop,/opt/tomcat/sti-dev.properties,cts2\.sti\.import\.username,sti_cts2)
+	$(call set_prop,/opt/tomcat/sti-dev.properties,cts2\.sti\.import\.password,$(PSQL_PW))
+
 # Last lucene version compatible with 6.x core
 SOLR_V=7.7.3
 SOLR_ARCHIVE=solr-$(SOLR_V).tgz
