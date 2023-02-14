@@ -1,0 +1,61 @@
+name: sti
+version: '3'
+services:
+  web:
+    build: ./sti-tomcat
+    networks:
+      stinet:
+        ipv4_address: 172.20.0.2
+    ports:
+      - 8080:8080
+# Wait forever for the file 'anything' to appear
+# https://stackoverflow.com/questions/38546755/docker-compose-keep-container-running
+    command: sh -c "liferay-ce-portal-7.4.3.59-ga59/tomcat-9.0.68/bin/startup.sh && tail -F /root/liferay-ce-portal-7.4.3.59-ga59/tomcat-9.0.68/logs/catalina.out"
+    volumes:
+      - ./catalina-logs:/root/liferay-ce-portal-7.4.3.59-ga59/tomcat-9.0.68/logs
+# Maybe add data/document_library also as volume
+  db:
+    image: postgres:15.1
+    networks:
+      stinet:
+        ipv4_address: 172.20.0.3
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - DATABASE_ALREADY_EXISTS=true
+    command: postgres
+  elastic:
+    build: ./lportal-search
+    networks:
+      stinet:
+        ipv4_address: 172.20.0.4
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type=single-node
+  solr:
+    image: dockersolr/docker-solr:7.7.3
+    networks:
+      stinet:
+        ipv4_address: 172.20.0.5
+    ports:
+      - 8983:8983
+    environment:
+      - SOLR_HOME=/var/solr/data
+    volumes:
+      - ./solr-data:/var/solr/data
+# The following are just placeholders at the moment
+#  pdi:
+#    image: wmarinho/pentaho-kettle
+#  virtuoso:
+#    image: tenforce/virtuoso
+networks:
+  stinet:
+    ipam:
+      driver: default
+      config:
+        - subnet : "172.20.0.0/24"

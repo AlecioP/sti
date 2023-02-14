@@ -3,10 +3,12 @@ FROM postgres:${postgres_v}
 
 WORKDIR /root
 
-ARG sti_v=1.0-docker
-ARG sti_repo=https://github.com/aleciop/sti/releases/downloads/${sti_v}
+ARG sti_v=v0.9-alpha-docker
+ARG sti_repo=https://github.com/aleciop/sti/releases/download/${sti_v}
 
 ADD ${sti_repo}/lportal.sql /root
+
+CMD su postgres -c "postgres"
 
 RUN psql -U postgres -c "create user sti_cts2 with encrypted password 'sti_cts2' nosuperuser nocreatedb nocreaterole login ;"
 
